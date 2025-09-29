@@ -1097,27 +1097,27 @@
             <div class="syntax-card">
                 <h3>📋 Template SEO-friendly type</h3>
                 <div class="code-block">
-{# Récupération des données #}
-{% set offres = api_data.banks|slice(0, 5) %}
+                    {# Récupération des données #}
+                    {% set offres = api_data.banks|slice(0, 5) %}
 
-<h1>{{ page.title|default('Comparatif Banques') }}</h1>
+                    <h1>{{ page.title|default('Comparatif Banques') }}</h1>
 
-{# Vérification que nous avons des données #}
-{% if offres|length > 0 %}
-    <ul>
-    {% for offre in offres %}
-        <li>
-            <h2>{{ offre.name }}</h2>
-            <p>Prix : {% if offre.price == 0 %}Gratuit{% else %}{{ offre.price }}€{% endif %}</p>
-            {% if offre.selectra_score is not empty %}
-                <p>Score Selectra : {{ offre.selectra_score }}</p>
-            {% endif %}
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucune offre disponible pour le moment.</p>
-{% endif %}
+                    {# Vérification que nous avons des données #}
+                    {% if offres|length > 0 %}
+                        <ul>
+                        {% for offre in offres %}
+                            <li>
+                                <h2>{{ offre.name }}</h2>
+                                <p>Prix : {% if offre.price == 0 %}Gratuit{% else %}{{ offre.price }}€{% endif %}</p>
+                                {% if offre.selectra_score is not empty %}
+                                    <p>Score Selectra : {{ offre.selectra_score }}</p>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Aucune offre disponible pour le moment.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
