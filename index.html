@@ -1118,8 +1118,8 @@
       <div class="quiz-option" onclick="selectAnswer(2, 'B', true)">
         B) {% if price == 0 %} Gratuit {% else %} {{ price }}€ {% endif %}
       </div>
-      <div class="quiz-option" onclick="selectAnswer(2, 'C', false)">
-        C) {{ price == 0 ? "Gratuit" : price }}
+      <div class="quiz-option" onclick="selectAnswer(2, 'C', true)">
+        C) {{ price == 0 ? "Gratuit" : price ~ '€' }}
       </div>
     </div>
 
