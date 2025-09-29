@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation : Les Bases de Twig pour SEO Project Managers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .presentation-container {
+            max-width: 1100px;
+            margin: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .slide {
+            display: none;
+            padding: 50px;
+            min-height: 650px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #4299e1;
+            padding-bottom: 15px;
+        }
+        
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .slide h3 {
+            color: #3182ce;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 15px;
+        }
+        
+        .content-box {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4299e1;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 2px solid #4a5568;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .code-inline {
+            background: #e2e8f0;
+            color: #2d3748;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .highlight {
+            background: #fbb6ce;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .important-note {
+            background: #f0fff4;
+            border: 2px solid #38a169;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .warning {
+            background: #fffbeb;
+            border: 2px solid #ed8936;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .example-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .example-card {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .syntax-card {
+            background: #edf2f7;
+            border: 2px solid #4299e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.1);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .table th {
+            background: #4299e1;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .table tbody tr:hover {
+            background: #f7fafc;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        .intro-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transform: perspective(1000px) rotateX(10deg);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: perspective(1000px) rotateX(0deg) translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .quiz-container {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #4299e1;
+        }
+        
+        .quiz-question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            border-color: #4299e1;
+            transform: translateX(5px);
+        }
+        
+        .quiz-option.correct {
+            background: #f0fff4;
+            border-color: #38a169;
+        }
+        
+        .quiz-option.incorrect {
+            background: #fed7d7;
+            border-color: #e53e3e;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .comparison-card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid;
+        }
+        
+        .display-card {
+            background: #e6fffa;
+            border-color: #38b2ac;
+        }
+        
+        .logic-card {
+            background: #fef5e7;
+            border-color: #ed8936;
+        }
+        
+        .comment-card {
+            background: #f7fafc;
+            border-color: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+        </div>
+
+        <!-- Slide 1: Introduction -->
+        <div class="slide active">
+            <h1>🧠 Les Bases de Twig pour SEO Project Managers</h1>
+            <div class="content-box">
+                <h2>👋 Bienvenue dans l'univers Twig !</h2>
+                <p><strong>Public cible :</strong> SEO Project Managers avec peu d'expérience en développement</p>
+                <p><strong>Durée estimée :</strong> 60 minutes</p>
+                <p><strong>Objectif :</strong> Comprendre Twig pour mieux collaborer avec les développeurs et optimiser vos contenus SEO</p>
+            </div>
+            
+            <div class="intro-stats">
+                <div class="stat-card">
+                    <span class="stat-number">3</span>
+                    <span>Types de balises</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">10+</span>
+                    <span>Filtres utiles</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">∞</span>
+                    <span>Possibilités SEO</span>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <strong>💡 Pourquoi apprendre Twig ?</strong><br>
+                Twig est le langage qui transforme vos données en contenu visible sur le site. Le maîtriser vous permet de mieux comprendre ce qui est possible d'automatiser et d'optimiser pour le SEO.
+            </div>
+        </div>
+
+        <!-- Slide 2: Qu'est-ce que Twig -->
+        <div class="slide">
+            <h2><span class="emoji">🔧</span>Qu'est-ce que Twig ?</h2>
+            
+            <div class="content-box">
+                <h3>Définition simple</h3>
+                <p>Twig est le <span class="highlight">langage de template</span> utilisé par Drupal. Il connecte le contenu (données) à l'affichage (HTML) de votre site.</p>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>📊 Avant Twig (PHP)</h3>
+                    <ul>
+                        <li>Code complexe et difficile à lire</li>
+                        <li>Risques de sécurité</li>
+                        <li>Collaboration difficile</li>
+                        <li>Maintenance compliquée</li>
+                    </ul>
+                </div>
+                
+                <div class="example-card">
+                    <h3>✅ Avec Twig</h3>
+                    <ul>
+                        <li>Syntaxe claire et lisible</li>
+                        <li>Sécurisé par défaut</li>
+                        <li>Modulaire et réutilisable</li>
+                        <li>Collaboration facilitée</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <h3>🎯 Impact SEO direct</h3>
+                <ul>
+                    <li><strong>Contenu dynamique :</strong> Affichage automatique de listes, classements, comparatifs</li>
+                    <li><strong>HTML propre :</strong> Structure cohérente appréciée par les moteurs de recherche</li>
+                    <li><strong>Balises optimisées :</strong> H1, H2, métadonnées gérées automatiquement</li>
+                    <li><strong>Mise à jour automatique :</strong> Contenu toujours à jour via les APIs</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Exemple concret -->
+        <div class="slide">
+            <h2><span class="emoji">💡</span>Exemple Concret d'Usage</h2>
+            
+            <div class="content-box">
+                <h3>🏦 Cas pratique : Afficher les meilleures offres bancaires</h3>
+                <p><strong>Problème :</strong> Comment afficher automatiquement un top 3 des meilleures banques selon notre API ?</p>
+            </div>
+            
+            <div class="warning">
+                <h3>❌ Méthode manuelle (sans Twig)</h3>
+                <ul>
+                    <li>Copier-coller manuellement les données de l'API</li>
+                    <li>Mettre à jour le contenu à chaque changement</li>
+                    <li>Risque d'erreurs et d'oublis</li>
+                    <li>Temps considérable à chaque modification</li>
+                </ul>
+            </div>
+            
+            <div class="important-note">
+                <h3>✅ Solution Twig (automatisée)</h3>
+                <div class="code-block">
+{% set offres = api_data.banks %}
+{% for offre in offres|slice(0, 3) %}
+    &lt;h3&gt;{{ loop.index }}. {{ offre.name }}&lt;/h3&gt;
+    &lt;p&gt;Note : {{ offre.selectra_score }}&lt;/p&gt;
+    &lt;p&gt;Prix : {{ offre.price }}€&lt;/p&gt;
+{% endfor %}
+                </div>
+                <p><strong>Résultat :</strong> Top 3 automatique, toujours à jour, avec structure HTML optimisée !</p>
+            </div>
+            
+            <div class="example-card">
+                <h3>🚀 Avantages pour le SEO</h3>
+                <ul>
+                    <li>Contenu toujours frais et actualisé</li>
+                    <li>Structure HTML cohérente (H3, listes, etc.)</li>
+                    <li>Aucune intervention manuelle nécessaire</li>
+                    <li>Possibilité de créer des variantes selon les critères</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Les 3 types de balises -->
+        <div class="slide">
+            <h2><span class="emoji">✏️</span>Les 3 Types de Balises Twig</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card display-card">
+                    <h3>{{ ... }}</h3>
+                    <p><strong>AFFICHAGE</strong></p>
+                    <p>Affiche une valeur sur la page</p>
+                </div>
+                
+                <div class="comparison-card logic-card">
+                    <h3>{% ... %}</h3>
+                    <p><strong>LOGIQUE</strong></p>
+                    <p>Exécute une action (boucle, condition)</p>
+                </div>
+                
+                <div class="comparison-card comment-card">
+                    <h3>{# ... #}</h3>
+                    <p><strong>COMMENTAIRE</strong></p>
+                    <p>Note invisible (pour les humains)</p>
+                </div>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>🔍 Exemples pratiques</h3>
+                
+                <h4>1. Affichage {{ ... }}</h4>
+                <div class="code-block">
+{{ offre.nom }}          → Affiche le nom de l'offre
+{{ offre.price }}        → Affiche le prix  
+{{ bank.slug }}          → Affiche le slug de la banque
+                </div>
+                
+                <h4>2. Logique {% ... %}</h4>
+                <div class="code-block">
+{% for offre in offres %}     → Boucle sur chaque offre
+{% if price == 0 %}           → Condition "si gratuit"
+{% set total = a + b %}       → Création de variable
+                </div>
+                
+                <h4>3. Commentaires {# ... #}</h4>
+                <div class="code-block">
+{# Ce commentaire explique le code mais n'apparaît pas sur la page #}
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Variables et données -->
+        <div class="slide">
+            <h2><span class="emoji">📦</span>Variables et Données</h2>
+            
+            <div class="content-box">
+                <h3>🎯 Qu'est-ce qu'une variable ?</h3>
+                <p>Une variable est une <span class="highlight">donnée préparée par le développeur</span> que vous pouvez afficher dans Twig.</p>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Point crucial :</strong> Twig ne crée pas les données, il les affiche seulement si elles sont disponibles.
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🏦 Variables bancaires</h3>
+                    <div class="code-block">
+{{ offre.name }}           → Nom de l'offre
+{{ bank.slug }}            → Identifiant banque
+{{ offre.price }}          → Prix de la carte
+{{ offre.selectra_score }} → Note Selectra
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <h3>🛡️ Variables assurances</h3>
+                    <div class="code-block">
+{{ assur.insurer.name }}     → Nom assureur
+{{ offre.profiles|first }}   → Premier profil
+{{ garanties.iard }}         → Garanties IARD
+{{ offre.first_price }}      → Prix d'entrée
+                    </div>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <h3>🤝 Collaboration avec les développeurs</h3>
+                <p><strong>Votre rôle :</strong> Définir quelles données vous avez besoin d'afficher</p>
+                <p><strong>Rôle du développeur :</strong> Préparer ces données dans le code (preprocess)</p>
+                <p><strong>Résultat :</strong> Variables disponibles dans votre template Twig</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Conditions -->
+        <div class="slide">
+            <h2><span class="emoji">🔀</span>Les Conditions en Twig</h2>
+            
+            <div class="content-box">
+                <h3>🎯 Afficher quelque chose seulement si...</h3>
+                <p>Les conditions permettent d'adapter l'affichage selon le contexte.</p>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>Structure de base</h3>
+                <div class="code-block">
+{% if condition %}
+    &lt;p&gt;Affiché si vrai&lt;/p&gt;
+{% else %}
+    &lt;p&gt;Affiché si faux&lt;/p&gt;
+{% endif %}
+                </div>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>💰 Exemple : Prix gratuit</h3>
+                    <div class="code-block">
+{% if offre.price == 0 %}
+    &lt;p&gt;⭐ {{ offre.name }} : GRATUITE !&lt;/p&gt;
+{% endif %}
+                    </div>
+                    <p><strong>Résultat :</strong> Affiche le message seulement si le prix est 0</p>
+                </div>
+                
+                <div class="example-card">
+                    <h3>🏆 Exemple : Note Selectra</h3>
+                    <div class="code-block">
+{% if offre.selectra_score == "A" %}
+    &lt;span class="badge-success"&gt;Recommandé&lt;/span&gt;
+{% elseif offre.selectra_score == "B" %}
+    &lt;span class="badge-good"&gt;Bon choix&lt;/span&gt;
+{% else %}
+    &lt;span class="badge-neutral"&gt;Standard&lt;/span&gt;
+{% endif %}
+                    </div>
+                    <p><strong>Résultat :</strong> Badge différent selon la note</p>
+                </div>
+            </div>
+            
+            <div class="table">
+                <thead>
+                    <tr>
+                        <th>Comparateur</th>
+                        <th>Signification</th>
+                        <th>Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>==</code></td>
+                        <td>Égal à</td>
+                        <td><code>{% if score == "A" %}</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>!=</code></td>
+                        <td>Différent de</td>
+                        <td><code>{% if type != "visa" %}</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>&gt;</code></td>
+                        <td>Supérieur à</td>
+                        <td><code>{% if price &gt; 10 %}</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>is empty</code></td>
+                        <td>Vide</td>
+                        <td><code>{% if title is empty %}</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 7: Boucles -->
+        <div class="slide">
+            <h2><span class="emoji">🔄</span>Les Boucles en Twig</h2>
+            
+            <div class="content-box">
+                <h3>🎯 Répéter une action pour chaque élément</h3>
+                <p>Les boucles permettent d'afficher automatiquement une liste d'éléments.</p>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>Structure de base</h3>
+                <div class="code-block">
+{% for element in liste %}
+    &lt;p&gt;{{ element.propriete }}&lt;/p&gt;
+{% endfor %}
+                </div>
+            </div>
+            
+            <div class="example-card">
+                <h3>📊 Exemple : Afficher toutes les offres</h3>
+                <div class="code-block">
+{% for offre in bank_offers %}
+    &lt;div class="offre-card"&gt;
+        &lt;h3&gt;{{ offre.name }}&lt;/h3&gt;
+        &lt;p&gt;Prix : {{ offre.price }}€&lt;/p&gt;
+        &lt;p&gt;Score : {{ offre.selectra_score }}&lt;/p&gt;
+    &lt;/div&gt;
+{% endfor %}
+                </div>
+                <p><strong>Résultat :</strong> Une carte pour chaque offre de la liste</p>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🏆 Classement automatique</h3>
+                    <div class="code-block">
+{% for offre in offres %}
+    &lt;p&gt;#{{ loop.index }} - {{ offre.name }}&lt;/p&gt;
+{% endfor %}
+                    </div>
+                    <p><code>loop.index</code> donne la position (#1, #2, #3...)</p>
+                </div>
+                
+                <div class="example-card">
+                    <h3>🎯 Condition dans une boucle</h3>
+                    <div class="code-block">
+{% for offre in offres %}
+    {% if loop.index == 1 %}
+        &lt;h2&gt;🥇 {{ offre.name }}&lt;/h2&gt;
+    {% else %}
+        &lt;h3&gt;{{ offre.name }}&lt;/h3&gt;
+    {% endif %}
+{% endfor %}
+                    </div>
+                    <p>Traitement spécial pour le premier élément</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Filtres Twig -->
+        <div class="slide">
+            <h2><span class="emoji">🔧</span>Les Filtres Twig</h2>
+            
+            <div class="content-box">
+                <h3>🎯 Transformer les données avant affichage</h3>
+                <p>Les filtres modifient une donnée avec le symbole <span class="code-inline">|</span></p>
+                <p><strong>Syntaxe :</strong> <span class="code-inline">{{ variable|filtre }}</span></p>
+            </div>
+            
+            <div class="table">
+                <thead>
+                    <tr>
+                        <th>Filtre</th>
+                        <th>Effet</th>
+                        <th>Exemple</th>
+                        <th>Résultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>|lower</code></td>
+                        <td>Minuscules</td>
+                        <td><code>{{ "BANQUE"|lower }}</code></td>
+                        <td>banque</td>
+                    </tr>
+                    <tr>
+                        <td><code>|upper</code></td>
+                        <td>Majuscules</td>
+                        <td><code>{{ "banque"|upper }}</code></td>
+                        <td>BANQUE</td>
+                    </tr>
+                    <tr>
+                        <td><code>|title</code></td>
+                        <td>Première lettre maj.</td>
+                        <td><code>{{ "ma banque"|title }}</code></td>
+                        <td>Ma Banque</td>
+                    </tr>
+                    <tr>
+                        <td><code>|length</code></td>
+                        <td>Compter éléments</td>
+                        <td><code>{{ offres|length }}</code></td>
+                        <td>5 (si 5 offres)</td>
+                    </tr>
+                    <tr>
+                        <td><code>|default()</code></td>
+                        <td>Valeur par défaut</td>
+                        <td><code>{{ titre|default('Pas de titre') }}</code></td>
+                        <td>Si titre vide → "Pas de titre"</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🔗 Joindre une liste</h3>
+                    <div class="code-block">
+{% set tags = ["Score A", "Gratuit", "VISA"] %}
+{{ tags|join(', ') }}
+                    </div>
+                    <p><strong>Résultat :</strong> Score A, Gratuit, VISA</p>
+                </div>
+                
+                <div class="example-card">
+                    <h3>🔄 Remplacer du texte</h3>
+                    <div class="code-block">
+{{ "direct-assurance"|replace({'-': ' '}) }}
+                    </div>
+                    <p><strong>Résultat :</strong> direct assurance</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Tri et manipulation -->
+        <div class="slide">
+            <h2><span class="emoji">📊</span>Trier et Manipuler les Listes</h2>
+            
+            <div class="content-box">
+                <h3>🎯 Organiser vos données</h3>
+                <p>Twig permet de trier et filtrer les listes pour un affichage optimal.</p>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>🔢 Trier par prix croissant</h3>
+                <div class="code-block">
+{% set offres_triees = offres|sort((a, b) => a.price <=> b.price) %}
+{% for offre in offres_triees %}
+    <p>{{ offre.name }} : {{ offre.price }}€</p>
+{% endfor %}
+                </div>
+                <p><strong>Résultat :</strong> Offres classées du moins cher au plus cher</p>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🔍 Filtrer selon une condition</h3>
+                    <div class="code-block">
+{% set offres_gratuites = offres|filter(o => o.price == 0) %}
+{% for offre in offres_gratuites %}
+    <p>{{ offre.name }} - GRATUIT</p>
+{% endfor %}
+                    </div>
+                    <p>Ne garde que les offres gratuites</p>
+                </div>
+                
+                <div class="example-card">
+                    <h3>🧩 Supprimer les doublons</h3>
+                    <div class="code-block">
+{% set marques_vues = [] %}
+{% for produit in produits %}
+    {% if produit.marque not in marques_vues %}
+        <p>{{ produit.marque }}</p>
+        {% set marques_vues = marques_vues|merge([produit.marque]) %}
+    {% endif %}
+{% endfor %}
+                    </div>
+                    <p>Affiche chaque marque une seule fois</p>
+                </div>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Limitations Drupal :</strong> Certains filtres comme <code>|unique</code> ou <code>|int</code> ne sont pas disponibles dans notre version de Twig.
+            </div>
+        </div>
+
+        <!-- Slide 10: Intégration API -->
+        <div class="slide">
+            <h2><span class="emoji">🔌</span>Intégration de Données API</h2>
+            
+            <div class="content-box">
+                <h3>🎯 Récupérer des données dynamiques</h3>
+                <p>Twig peut afficher des données provenant de nos APIs (banques, assurances, rénovation).</p>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>📡 Appel API simple</h3>
+                <div class="code-block">
+{% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks" %}
+{% set result = api_complete_request('GET', url, options) %}
+                </div>
+                <p>Récupère toutes les données bancaires</p>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🏦 Exemple : Meilleures banques</h3>
+                    <div class="code-block">
+{% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks?sort=best_welcome_promo&per_page=3" %}
+{% set result = api_complete_request('GET', url, options) %}
+
+{% for bank in result %}
+    <div class="bank-card">
+        <h3>{{ bank.name }}</h3>
+        <p>Score : {{ bank.selectra_score }}</p>
+    </div>
+{% endfor %}
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <h3>🛡️ Exemple : Assurances auto</h3>
+                    <div class="code-block">
+{% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/insurance-offers/car" %}
+{% set result = api_complete_request('GET', url, options) %}
+
+{% for assur in result|slice(0, 5) %}
+    <p>{{ assur.insurer.name }} - {{ assur.first_price }}€</p>
+{% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <h3>🚀 Avantages pour le SEO</h3>
+                <ul>
+                    <li><strong>Contenu frais :</strong> Données toujours à jour automatiquement</li>
+                    <li><strong>Pas de maintenance :</strong> Aucune intervention manuelle</li>
+                    <li><strong>Cohérence :</strong> Même structure sur toutes les pages</li>
+                    <li><strong>Performance :</strong> Filtrage intelligent des données</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Créer des variables -->
+        <div class="slide">
+            <h2><span class="emoji">📝</span>Créer des Variables avec SET</h2>
+            
+            <div class="content-box">
+                <h3>🎯 Stocker et manipuler des données</h3>
+                <p>La fonction <code>set</code> permet de créer des variables temporaires pour vos calculs.</p>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>Structure de base</h3>
+                <div class="code-block">
+{% set variable_name = valeur %}
+{{ variable_name }}
+                </div>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🧮 Calculs simples</h3>
+                    <div class="code-block">
+{% set prix_total = offre.frais + offre.abonnement %}
+{% set remise = prix_total * 0.1 %}
+
+<p>Prix : {{ prix_total }}€</p>
+<p>Remise : {{ remise }}€</p>
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <h3>📊 Listes et tableaux</h3>
+                    <div class="code-block">
+{% set top_banques = ["Boursobank", "Revolut", "N26"] %}
+{% set scores = {"A": "Excellent", "B": "Bon", "C": "Moyen"} %}
+
+{{ top_banques|join(', ') }}
+{{ scores["A"] }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>🔗 Fusionner des listes</h3>
+                <div class="code-block">
+{% set mots_cles_manuels = ['banque', 'carte'] %}
+{% set mots_cles_api = ['gratuit', 'visa'] %}
+{% set tous_mots_cles = mots_cles_manuels|merge(mots_cles_api) %}
+
+<p>Mots-clés : {{ tous_mots_cles|join(', ') }}</p>
+                </div>
+                <p><strong>Résultat :</strong> banque, carte, gratuit, visa</p>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Attention :</strong> Vous ne pouvez utiliser que les variables que vous avez définies ou qui ont été préparées par le développeur.
+            </div>
+        </div>
+
+        <!-- Slide 12: Cas pratiques SEO -->
+        <div class="slide">
+            <h2><span class="emoji">🎯</span>Cas Pratiques pour le SEO</h2>
+            
+            <div class="content-box">
+                <h3>🚀 Applications concrètes dans vos projets</h3>
+                <p>Comment utiliser Twig pour optimiser vos contenus SEO au quotidien.</p>
+            </div>
+            
+            <div class="example-card">
+                <h3>📈 1. Tableau comparatif automatique</h3>
+                <div class="code-block">
+<table>
+    <thead>
+        <tr><th>Banque</th><th>Prix</th><th>Score</th></tr>
+    </thead>
+    <tbody>
+        {% for bank in banks|sort((a,b) => a.price <=> b.price) %}
+        <tr>
+            <td>{{ bank.name }}</td>
+            <td>
+                {% if bank.price == 0 %}
+                    <strong>GRATUIT</strong>
+                {% else %}
+                    {{ bank.price }}€
+                {% endif %}
+            </td>
+            <td>{{ bank.selectra_score }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+                </div>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🏆 2. Top N avec compteur</h3>
+                    <div class="code-block">
+<h2>Top 3 des meilleures banques</h2>
+{% for bank in best_banks|slice(0,3) %}
+    <h3>{{ loop.index }}. {{ bank.name }}</h3>
+    <p>{{ bank.description }}</p>
+    {% if loop.index == 1 %}
+        <span class="badge-gold">Meilleur choix</span>
+    {% endif %}
+{% endfor %}
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <h3>🎨 3. Badges dynamiques</h3>
+                    <div class="code-block">
+{% for offre in offres %}
+    <div class="offer-card">
+        <h3>{{ offre.name }}</h3>
+        
+        {% if offre.selectra_score == "A" %}
+            <span class="badge-success">Recommandé</span>
+        {% endif %}
+        
+        {% if offre.price == 0 %}
+            <span class="badge-free">Gratuit</span>
+        {% endif %}
+    </div>
+{% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <h3>💡 Astuce SEO</h3>
+                <p>Combinez plusieurs critères pour créer des contenus riches :</p>
+                <ul>
+                    <li>Prix + Score + Type = Classement pertinent</li>
+                    <li>Conditions + Avantages = Analyse complète</li>
+                    <li>Tri automatique = Contenu toujours optimisé</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 13: Quiz -->
+        <div class="slide">
+            <h2><span class="emoji">🧠</span>Quiz : Testez vos Connaissances</h2>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">
+                    ❓ Quelle balise utilisez-vous pour afficher le nom d'une offre ?
+                </div>
+                <div class="quiz-options" id="quiz1">
+                    <div class="quiz-option" onclick="selectAnswer(1, 'A', false)">
+                        A) {% offre.nom %}
+                    </div>
+                    <div class="quiz-option" onclick="selectAnswer(1, 'B', true)">
+                        B) {{ offre.nom }}
+                    </div>
+                    <div class="quiz-option" onclick="selectAnswer(1, 'C', false)">
+                        C) {# offre.nom #}
+                    </div>
+                </div>
+                
+                <div class="quiz-question" style="margin-top: 30px;">
+                    ❓ Comment afficher "Gratuit" si le prix est 0, sinon afficher le prix ?
+                </div>
+                <div class="quiz-options" id="quiz2">
+                    <div class="quiz-option" onclick="selectAnswer(2, 'A', false)">
+                        A) {{ if price == 0 then "Gratuit" else price }}
+                    </div>
+                    <div class="quiz-option" onclick="selectAnswer(2, 'B', true)">
+                        B) {% if price == 0 %} Gratuit {% else %} {{ price }}€ {% endif %}
+                    </div>
+                    <div class="quiz-option" onclick="selectAnswer(2, 'C', false)">
+                        C) {{ price == 0 ? "Gratuit" : price }}
+                    </div>
+                </div>
+                
+                <div class="quiz-question" style="margin-top: 30px;">
+                    ❓ Comment compter le nombre d'offres dans une liste ?
+                </div>
+                <div class="quiz-options" id="quiz3">
+                    <div class="quiz-option" onclick="selectAnswer(3, 'A', true)">
+                        A) {{ offres|length }}
+                    </div>
+                    <div class="quiz-option" onclick="selectAnswer(3, 'B', false)">
+                        B) {{ count(offres) }}
+                    </div>
+                    <div class="quiz-option" onclick="selectAnswer(3, 'C', false)">
+                        C) {{ offres.size }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Bonnes pratiques -->
+        <div class="slide">
+            <h2><span class="emoji">✅</span>Bonnes Pratiques SEO avec Twig</h2>
+            
+            <div class="example-grid">
+                <div class="example-card" style="border: 2px solid #38a169;">
+                    <h3>✅ À FAIRE</h3>
+                    <ul>
+                        <li>Utiliser des <strong>conditions</strong> pour adapter l'affichage</li>
+                        <li>Créer des <strong>classements automatiques</strong> avec les boucles</li>
+                        <li>Appliquer des <strong>filtres</strong> pour organiser les données</li>
+                        <li>Utiliser <strong>default()</strong> pour éviter les contenus vides</li>
+                        <li>Combiner <strong>API + Twig</strong> pour du contenu frais</li>
+                    </ul>
+                </div>
+                
+                <div class="example-card" style="border: 2px solid #e53e3e;">
+                    <h3>❌ À ÉVITER</h3>
+                    <ul>
+                        <li>Utiliser des <strong>variables non définies</strong></li>
+                        <li>Oublier les <strong>conditions de sécurité</strong> (is empty)</li>
+                        <li>Créer des <strong>boucles infinies</strong></li>
+                        <li>Ignorer la <strong>structure HTML</strong> (h1, h2, etc.)</li>
+                        <li>Négliger les <strong>performances</strong> (trop de données)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <h3>🎯 Checklist SEO avec Twig</h3>
+                <ol>
+                    <li><strong>Structure :</strong> Utiliser les bonnes balises HTML (h1, h2, p, ul)</li>
+                    <li><strong>Contenu :</strong> Afficher des données pertinentes et à jour</li>
+                    <li><strong>Performance :</strong> Limiter les données avec des filtres</li>
+                    <li><strong>Robustesse :</strong> Prévoir les cas où les données sont vides</li>
+                    <li><strong>Lisibilité :</strong> Commenter le code pour la maintenance</li>
+                </ol>
+            </div>
+            
+            <div class="syntax-card">
+                <h3>📋 Template SEO-friendly type</h3>
+                <div class="code-block">
+{# Récupération des données #}
+{% set offres = api_data.banks|slice(0, 5) %}
+
+<h1>{{ page.title|default('Comparatif Banques') }}</h1>
+
+{# Vérification que nous avons des données #}
+{% if offres|length > 0 %}
+    <ul>
+    {% for offre in offres %}
+        <li>
+            <h2>{{ offre.name }}</h2>
+            <p>Prix : {% if offre.price == 0 %}Gratuit{% else %}{{ offre.price }}€{% endif %}</p>
+            {% if offre.selectra_score is not empty %}
+                <p>Score Selectra : {{ offre.selectra_score }}</p>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucune offre disponible pour le moment.</p>
+{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Récapitulatif -->
+        <div class="slide">
+            <h2><span class="emoji">🎉</span>Récapitulatif et Prochaines Étapes</h2>
+            
+            <div class="content-box">
+                <h3>🎓 Ce que vous maîtrisez maintenant :</h3>
+                <div class="intro-stats">
+                    <div class="stat-card">
+                        <span class="stat-number">✓</span>
+                        <span>3 types de balises Twig</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">✓</span>
+                        <span>Conditions et boucles</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">✓</span>
+                        <span>Filtres et manipulations</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>🚀 Prochaines étapes</h3>
+                    <ol>
+                        <li><strong>Pratiquez</strong> sur des templates simples</li>
+                        <li><strong>Collaborez</strong> avec les développeurs Drupal</li>
+                        <li><strong>Testez</strong> vos idées sur des cas concrets</li>
+                        <li><strong>Optimisez</strong> vos contenus existants</li>
+                    </ol>
+                </div>
+                
+                <div class="example-card">
+                    <h3>📚 Ressources</h3>
+                    <ul>
+                        <li>Documentation Drupal-Selectra</li>
+                        <li>Templates existants sur Basecamp</li>
+                        <li>Support technique équipe dev</li>
+                        <li>Sessions de formation avancée</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <h3>💡 Points clés à retenir</h3>
+                <ul>
+                    <li><strong>Twig transforme les données en contenu visible</strong></li>
+                    <li><strong>{{ }} pour afficher, {% %} pour la logique</strong></li>
+                    <li><strong>Les filtres permettent de manipuler les données</strong></li>
+                    <li><strong>Les conditions et boucles rendent le contenu intelligent</strong></li>
+                    <li><strong>L'intégration API + Twig = contenu SEO automatisé</strong></li>
+                </ul>
+            </div>
+            
+            <div class="content-box" style="text-align: center; background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                <h3>🎯 Votre nouveau superpouvvoir SEO</h3>
+                <p style="font-size: 1.2em; margin: 20px 0;">
+                    Vous pouvez maintenant créer du contenu dynamique, automatisé et toujours à jour !
+                </p>
+                <p><strong>Félicitations ! 🚀</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Précédent</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Suivant →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+        
+        function selectAnswer(quizNum, option, isCorrect) {
+            const quizOptions = document.getElementById('quiz' + quizNum).children;
+            
+            // Reset all options
+            for (let option of quizOptions) {
+                option.classList.remove('correct', 'incorrect');
+            }
+            
+            // Mark selected option
+            event.target.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            // Show correct answer if wrong was selected
+            if (!isCorrect) {
+                for (let option of quizOptions) {
+                    if (option.onclick.toString().includes('true')) {
+                        option.classList.add('correct');
+                    }
+                }
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Escape') showSlide(0);
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
