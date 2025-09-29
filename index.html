@@ -836,22 +836,22 @@
                 <h3>📡 Appel API simple</h3>
                 <div class="code-block">
 {% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks" %}
-{% set result = api_complete_request('GET', url, options) %}
+{% set result = api_complete_request('GET', url, options).data %}
                 </div>
-                <p>Récupère toutes les données bancaires</p>
+                <p>Récupère les banques au sein de notre BDD</p>
             </div>
             
             <div class="example-grid">
                 <div class="example-card">
                     <h3>🏦 Exemple : Meilleures banques</h3>
                     <div class="code-block">
-{% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks?sort=best_welcome_promo&per_page=3" %}
-{% set result = api_complete_request('GET', url, options) %}
+{% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks?sort=best_welcome_promo&filters[show_in_content]=1&direction=desc&per_page=3" %}
+{% set result = api_complete_request('GET', url, options).data %}
 
 {% for bank in result %}
     &lt;div class="bank-card"&gt;
         &lt;h3&gt;{{ bank.name }}&lt;/h3&gt;
-        &lt;p&gt;Score : {{ bank.selectra_score }}&lt;/p&gt;
+        &lt;p&gt;Score : {{ bank.best_offer.selectra_score }}&lt;/p&gt;
     &lt;/div&gt;
 {% endfor %}
                     </div>
@@ -864,7 +864,7 @@
 {% set result = api_complete_request('GET', url, options) %}
 
 {% for assur in result|slice(0, 5) %}
-    &lt;p&gt;{{ assur.insurer.name }} - {{ assur.first_price }}€&lt;/p&gt;
+    &lt;p&gt;{{ assur.insurer.name }} - {{ assur.selectra_score }}€&lt;/p&gt;
 {% endfor %}
                     </div>
                 </div>
@@ -976,35 +976,100 @@
             
             <div class="example-grid">
                 <div class="example-card">
-                    <h3>🏆 2. Top N avec compteur</h3>
+                    <h3>🏆 2. Top banques en ligne (API + rendu condensé)</h3>
                     <div class="code-block">
-&lt;h2&gt;Top 3 des meilleures banques&lt;/h2&gt;
-{% for bank in best_banks|slice(0,3) %}
-    &lt;h3&gt;{{ loop.index }}. {{ bank.name }}&lt;/h3&gt;
-    &lt;p&gt;{{ bank.description }}&lt;/p&gt;
-    {% if loop.index == 1 %}
-        &lt;span class="badge-gold"&gt;Meilleur choix&lt;/span&gt;
-    {% endif %}
-{% endfor %}
+                        {# 5 meilleures banques en ligne avec prime de bienvenue #}
+                        {% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks?filters[bank][type][]=Banque en ligne&filters[show_in_content]=1&per_page=5&sort=best_welcome_promo&direction=desc&includes[]=bank.advantages" %}
+                        {% set onlineBanks = api_complete_request('GET', url, options).data %}
+
+                        {% for b in onlineBanks %}
+                            &lt;article class="bank-card"&gt;
+                                &lt;h3&gt;{{ loop.index }}. {{ b.name }}&lt;/h3&gt;
+
+                                {# Affiche la meilleure prime disponible #}
+                                {% set promo = b.best_welcome_promo ?? b.best_offer.welcome_promo %}
+                                {% if promo is not empty %}
+                                    &lt;p&gt;Prime : {{ promo.prefix_high }} {{ promo.amount_high }} {{ promo.suffix_high }}&lt;/p&gt;
+                                {% endif %}
+
+                                {# Exemple d’infos additionnelles #}
+                                {% if b.bank.advantages is not empty %}
+                                    &lt;ul&gt;
+                                        {% for adv in b.bank.advantages|slice(0,2) %}
+                                            &lt;li&gt;{{ adv }}&lt;/li&gt;
+                                        {% endfor %}
+                                    &lt;/ul&gt;
+                                {% endif %}
+                            &lt;/article&gt;
+                        {% endfor %}
+
                     </div>
                 </div>
                 
                 <div class="example-card">
-                    <h3>🎨 3. Badges dynamiques</h3>
+                    <h3>🎨 3. Détail par banque → sous-requête offres + template</h3>
                     <div class="code-block">
-{% for offre in offres %}
-    &lt;div class="offer-card"&gt;
-        &lt;h3&gt;{{ offre.name }}&lt;/h3&gt;
-        
-        {% if offre.selectra_score == "A" %}
-            &lt;span class="badge-success"&gt;Recommandé&lt;/span&gt;
+{# On repart de la liste ci-dessus pour générer un bloc par banque #}
+{% set bankNames = onlineBanks|map(i => i.name) %}
+
+{% for name in bankNames %}
+    {% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks/offers?filters[bank][name][]=" ~ name ~ "&filters[show_in_content]=1&sort[offer][welcome_promo]=desc" %}
+    {% set offers = api_complete_request('GET', url, options).data %}
+
+    &lt;h3&gt;Offre de bienvenue {{ name }} : 
+        {% if offers|first.welcome_promos|first is defined %}
+            {{ offers|first.welcome_promos|first.prefix_high }} {{ offers|first.welcome_promos|first.amount_high }} {{ offers|first.welcome_promos|first.suffix_high }}
+        {% else %}
+            Non communiqué
         {% endif %}
-        
-        {% if offre.price == 0 %}
-            &lt;span class="badge-free"&gt;Gratuit&lt;/span&gt;
-        {% endif %}
-    &lt;/div&gt;
+    &lt;/h3&gt;
+
+    {# Injecte le composant visuel avec les 3 meilleures offres #}
+    {% set slugs = offers|slice(0,3)|column('slug') %}
+    {{ use_template("finance_offres_de_bienvenues_v2", slugs.0, slugs.1, slugs.2) }}
+
+    {# Exemple de note “parrainage” si dispo #}
+    {% if offers|first.sponsorship_offer|first.details %}
+        &lt;div class="action-box"&gt;
+            &lt;p&gt;☑️ &lt;strong&gt;À noter :&lt;/strong&gt; {{ name }} propose aussi un programme parrainage : 
+            {{ offers|first.sponsorship_offer|first.details }}&lt;/p&gt;
+        &lt;/div&gt;
+    {% endif %}
 {% endfor %}
+
+                    </div>
+                </div>
+
+                <div class="example-card">
+                    <h3>🎨 3. Détail par banque → sous-requête offres + template</h3>
+                    <div class="code-block">
+                        {# On repart de la liste ci-dessus pour générer un bloc par banque #}
+                        {% set bankNames = onlineBanks|map(i => i.name) %}
+
+                        {% for name in bankNames %}
+                            {% set url = "https://insurance-api.app.production.aws.selectra.io/api/data/banks/offers?filters[bank][name][]=" ~ name ~ "&filters[show_in_content]=1&sort[offer][welcome_promo]=desc" %}
+                            {% set offers = api_complete_request('GET', url, options).data %}
+
+                            &lt;h3&gt;Offre de bienvenue {{ name }} : 
+                                {% if offers|first.welcome_promos|first is defined %}
+                                    {{ offers|first.welcome_promos|first.prefix_high }} {{ offers|first.welcome_promos|first.amount_high }} {{ offers|first.welcome_promos|first.suffix_high }}
+                                {% else %}
+                                    Non communiqué
+                                {% endif %}
+                            &lt;/h3&gt;
+
+                            {# Injecte le composant visuel avec les 3 meilleures offres #}
+                            {% set slugs = offers|slice(0,3)|column('slug') %}
+                            {{ use_template("finance_offres_de_bienvenues_v2", slugs.0, slugs.1, slugs.2) }}
+
+                            {# Exemple de note “parrainage” si dispo #}
+                            {% if offers|first.sponsorship_offer|first.details %}
+                                &lt;div class="action-box"&gt;
+                                    &lt;p&gt;☑️ &lt;strong&gt;À noter :&lt;/strong&gt; {{ name }} propose aussi un programme parrainage : 
+                                    {{ offers|first.sponsorship_offer|first.details }}&lt;/p&gt;
+                                &lt;/div&gt;
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -1022,55 +1087,206 @@
 
         <!-- Slide 13: Quiz -->
         <div class="slide">
-            <h2><span class="emoji">🧠</span>Quiz : Testez vos Connaissances</h2>
-            
-            <div class="quiz-container">
-                <div class="quiz-question">
-                    ❓ Quelle balise utilisez-vous pour afficher le nom d'une offre ?
-                </div>
-                <div class="quiz-options" id="quiz1">
-                    <div class="quiz-option" onclick="selectAnswer(1, 'A', false)">
-                        A) {% offre.nom %}
-                    </div>
-                    <div class="quiz-option" onclick="selectAnswer(1, 'B', true)">
-                        B) {{ offre.nom }}
-                    </div>
-                    <div class="quiz-option" onclick="selectAnswer(1, 'C', false)">
-                        C) {# offre.nom #}
-                    </div>
-                </div>
-                
-                <div class="quiz-question" style="margin-top: 30px;">
-                    ❓ Comment afficher "Gratuit" si le prix est 0, sinon afficher le prix ?
-                </div>
-                <div class="quiz-options" id="quiz2">
-                    <div class="quiz-option" onclick="selectAnswer(2, 'A', false)">
-                        A) {{ if price == 0 then "Gratuit" else price }}
-                    </div>
-                    <div class="quiz-option" onclick="selectAnswer(2, 'B', true)">
-                        B) {% if price == 0 %} Gratuit {% else %} {{ price }}€ {% endif %}
-                    </div>
-                    <div class="quiz-option" onclick="selectAnswer(2, 'C', false)">
-                        C) {{ price == 0 ? "Gratuit" : price }}
-                    </div>
-                </div>
-                
-                <div class="quiz-question" style="margin-top: 30px;">
-                    ❓ Comment compter le nombre d'offres dans une liste ?
-                </div>
-                <div class="quiz-options" id="quiz3">
-                    <div class="quiz-option" onclick="selectAnswer(3, 'A', true)">
-                        A) {{ offres|length }}
-                    </div>
-                    <div class="quiz-option" onclick="selectAnswer(3, 'B', false)">
-                        B) {{ count(offres) }}
-                    </div>
-                    <div class="quiz-option" onclick="selectAnswer(3, 'C', false)">
-                        C) {{ offres.size }}
-                    </div>
-                </div>
-            </div>
+        <h2><span class="emoji">🧠</span>Quiz : Testez vos Connaissances</h2>
+
+    <div class="quiz-container">
+
+    <!-- Q1 -->
+        <div class="quiz-question">
+        ❓ Quelle balise utilisez-vous pour afficher le nom d'une offre ?
         </div>
+        <div class="quiz-options" id="quiz1">
+        <div class="quiz-option" onclick="selectAnswer(1, 'A', false)">
+            A) {% offre.nom %}
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 'B', true)">
+            B) {{ offre.nom }}
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 'C', false)">
+            C) {# offre.nom #}
+        </div>
+        </div>
+
+    <!-- Q2 -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Comment afficher "Gratuit" si le prix est 0, sinon afficher le prix ?
+    </div>
+    <div class="quiz-options" id="quiz2">
+      <div class="quiz-option" onclick="selectAnswer(2, 'A', false)">
+        A) {{ if price == 0 then "Gratuit" else price }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(2, 'B', true)">
+        B) {% if price == 0 %} Gratuit {% else %} {{ price }}€ {% endif %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(2, 'C', false)">
+        C) {{ price == 0 ? "Gratuit" : price }}
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Comment compter le nombre d'offres dans une liste ?
+    </div>
+    <div class="quiz-options" id="quiz3">
+      <div class="quiz-option" onclick="selectAnswer(3, 'A', true)">
+        A) {{ offres|length }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(3, 'B', false)">
+        B) {{ count(offres) }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(3, 'C', false)">
+        C) {{ offres.size }}
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Quelle balise utilise-t-on pour écrire de la logique (boucles, conditions) en Twig ?
+    </div>
+    <div class="quiz-options" id="quiz4">
+      <div class="quiz-option" onclick="selectAnswer(4, 'A', false)">
+        A) {{ ... }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(4, 'B', true)">
+        B) {% ... %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(4, 'C', false)">
+        C) {# ... #}
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Quel filtre affiche une valeur de secours quand une variable est vide ?
+    </div>
+    <div class="quiz-options" id="quiz5">
+      <div class="quiz-option" onclick="selectAnswer(5, 'A', true)">
+        A) {{ titre|default('Pas de titre') }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(5, 'B', false)">
+        B) {{ titre|fallback('Pas de titre') }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(5, 'C', false)">
+        C) {{ default(titre, 'Pas de titre') }}
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Comment afficher la position (1, 2, 3…) d’un élément dans une boucle ?
+    </div>
+    <div class="quiz-options" id="quiz6">
+      <div class="quiz-option" onclick="selectAnswer(6, 'A', true)">
+        A) {{ loop.index }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(6, 'B', false)">
+        B) {{ loop.count }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(6, 'C', false)">
+        C) {{ loop.key }}
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Quelle est la bonne condition pour vérifier que <code>titre</code> est vide ?
+    </div>
+    <div class="quiz-options" id="quiz7">
+      <div class="quiz-option" onclick="selectAnswer(7, 'A', false)">
+        A) {% if titre == null or titre == '' %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(7, 'B', true)">
+        B) {% if titre is empty %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(7, 'C', false)">
+        C) {{ titre.empty? }}
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Comment trier une liste <code>offres</code> par prix croissant avant affichage ?
+    </div>
+    <div class="quiz-options" id="quiz8">
+      <div class="quiz-option" onclick="selectAnswer(8, 'A', true)">
+        A) {% set offres_triees = offres|sort((a,b) =&gt; a.price &lt;=&gt; b.price) %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(8, 'B', false)">
+        B) {% set offres_triees = offres|orderBy('price','asc') %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(8, 'C', false)">
+        C) {% set offres_triees = offres|sortBy('price') %}
+      </div>
+    </div>
+
+    <!-- Q9 (join) -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Comment afficher une liste <code>tags</code> séparée par des virgules ?
+    </div>
+    <div class="quiz-options" id="quiz9">
+      <div class="quiz-option" onclick="selectAnswer(9, 'A', true)">
+        A) {{ tags|join(', ') }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(9, 'B', false)">
+        B) {{ join(tags, ', ') }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(9, 'C', false)">
+        C) {{ tags.join(', ') }}
+      </div>
+    </div>
+
+    <!-- Q10 (replace) -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Quelle expression remplace les tirets par des espaces dans <code>"direct-assurance"</code> ?
+    </div>
+    <div class="quiz-options" id="quiz10">
+      <div class="quiz-option" onclick="selectAnswer(10, 'A', true)">
+        A) {{ "direct-assurance"|replace({'-':' '}) }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(10, 'B', false)">
+        B) {{ replace("direct-assurance", '-', ' ') }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(10, 'C', false)">
+        C) {{ "direct-assurance"|replace('-', ' ') }}
+      </div>
+    </div>
+
+    <!-- Q11 (slice) -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Comment récupérer uniquement les 3 premières offres d’une liste <code>offres</code> ?
+    </div>
+    <div class="quiz-options" id="quiz11">
+      <div class="quiz-option" onclick="selectAnswer(11, 'A', true)">
+        A) {{ offres|slice(0, 3) }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(11, 'B', false)">
+        B) {{ offres|take(3) }}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(11, 'C', false)">
+        C) {{ offres|first(3) }}
+      </div>
+    </div>
+
+    <!-- Q12 (API + .data) -->
+    <div class="quiz-question" style="margin-top: 30px;">
+      ❓ Quelle ligne récupère correctement les données (tableau) depuis l’API avant une boucle ?
+    </div>
+    <div class="quiz-options" id="quiz12">
+      <div class="quiz-option" onclick="selectAnswer(12, 'A', true)">
+        A) {% set result = api_complete_request('GET', url, options).data %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(12, 'B', false)">
+        B) {% set result = api_complete_request('GET', url, options) %}
+      </div>
+      <div class="quiz-option" onclick="selectAnswer(12, 'C', false)">
+        C) {% set result = api_request(url) %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
 
         <!-- Slide 14: Bonnes pratiques -->
         <div class="slide">
