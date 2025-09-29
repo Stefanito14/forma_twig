@@ -66,6 +66,12 @@
             font-size: 1.5em;
             margin: 20px 0 15px 0;
         }
+
+        .slide h4 {
+            color: #2d3748;
+            font-size: 1.2em;
+            margin: 15px 0 10px 0;
+        }
         
         .emoji {
             font-size: 1.2em;
@@ -224,6 +230,11 @@
             margin: 15px 0;
             padding-left: 30px;
         }
+
+        ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
         
         li {
             margin: 8px 0;
@@ -327,6 +338,11 @@
         .comment-card {
             background: #f7fafc;
             border-color: #a0aec0;
+        }
+
+        p {
+            line-height: 1.6;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -620,6 +636,7 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
 
         <!-- Slide 7: Boucles -->
         <div class="slide">
@@ -690,7 +707,7 @@
                 <p><strong>Syntaxe :</strong> <span class="code-inline">{{ variable|filtre }}</span></p>
             </div>
             
-            <div class="table">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Filtre</th>
@@ -767,7 +784,7 @@
                 <div class="code-block">
 {% set offres_triees = offres|sort((a, b) => a.price <=> b.price) %}
 {% for offre in offres_triees %}
-    <p>{{ offre.name }} : {{ offre.price }}€</p>
+    &lt;p&gt;{{ offre.name }} : {{ offre.price }}€&lt;/p&gt;
 {% endfor %}
                 </div>
                 <p><strong>Résultat :</strong> Offres classées du moins cher au plus cher</p>
@@ -779,7 +796,7 @@
                     <div class="code-block">
 {% set offres_gratuites = offres|filter(o => o.price == 0) %}
 {% for offre in offres_gratuites %}
-    <p>{{ offre.name }} - GRATUIT</p>
+    &lt;p&gt;{{ offre.name }} - GRATUIT&lt;/p&gt;
 {% endfor %}
                     </div>
                     <p>Ne garde que les offres gratuites</p>
@@ -791,7 +808,7 @@
 {% set marques_vues = [] %}
 {% for produit in produits %}
     {% if produit.marque not in marques_vues %}
-        <p>{{ produit.marque }}</p>
+        &lt;p&gt;{{ produit.marque }}&lt;/p&gt;
         {% set marques_vues = marques_vues|merge([produit.marque]) %}
     {% endif %}
 {% endfor %}
@@ -831,10 +848,10 @@
 {% set result = api_complete_request('GET', url, options) %}
 
 {% for bank in result %}
-    <div class="bank-card">
-        <h3>{{ bank.name }}</h3>
-        <p>Score : {{ bank.selectra_score }}</p>
-    </div>
+    &lt;div class="bank-card"&gt;
+        &lt;h3&gt;{{ bank.name }}&lt;/h3&gt;
+        &lt;p&gt;Score : {{ bank.selectra_score }}&lt;/p&gt;
+    &lt;/div&gt;
 {% endfor %}
                     </div>
                 </div>
@@ -846,7 +863,7 @@
 {% set result = api_complete_request('GET', url, options) %}
 
 {% for assur in result|slice(0, 5) %}
-    <p>{{ assur.insurer.name }} - {{ assur.first_price }}€</p>
+    &lt;p&gt;{{ assur.insurer.name }} - {{ assur.first_price }}€&lt;/p&gt;
 {% endfor %}
                     </div>
                 </div>
@@ -887,8 +904,8 @@
 {% set prix_total = offre.frais + offre.abonnement %}
 {% set remise = prix_total * 0.1 %}
 
-<p>Prix : {{ prix_total }}€</p>
-<p>Remise : {{ remise }}€</p>
+&lt;p&gt;Prix : {{ prix_total }}€&lt;/p&gt;
+&lt;p&gt;Remise : {{ remise }}€&lt;/p&gt;
                     </div>
                 </div>
                 
@@ -911,7 +928,7 @@
 {% set mots_cles_api = ['gratuit', 'visa'] %}
 {% set tous_mots_cles = mots_cles_manuels|merge(mots_cles_api) %}
 
-<p>Mots-clés : {{ tous_mots_cles|join(', ') }}</p>
+&lt;p&gt;Mots-clés : {{ tous_mots_cles|join(', ') }}&lt;/p&gt;
                 </div>
                 <p><strong>Résultat :</strong> banque, carte, gratuit, visa</p>
             </div>
@@ -933,26 +950,26 @@
             <div class="example-card">
                 <h3>📈 1. Tableau comparatif automatique</h3>
                 <div class="code-block">
-<table>
-    <thead>
-        <tr><th>Banque</th><th>Prix</th><th>Score</th></tr>
-    </thead>
-    <tbody>
+&lt;table&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;&lt;th&gt;Banque&lt;/th&gt;&lt;th&gt;Prix&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
         {% for bank in banks|sort((a,b) => a.price <=> b.price) %}
-        <tr>
-            <td>{{ bank.name }}</td>
-            <td>
+        &lt;tr&gt;
+            &lt;td&gt;{{ bank.name }}&lt;/td&gt;
+            &lt;td&gt;
                 {% if bank.price == 0 %}
-                    <strong>GRATUIT</strong>
+                    &lt;strong&gt;GRATUIT&lt;/strong&gt;
                 {% else %}
                     {{ bank.price }}€
                 {% endif %}
-            </td>
-            <td>{{ bank.selectra_score }}</td>
-        </tr>
+            &lt;/td&gt;
+            &lt;td&gt;{{ bank.selectra_score }}&lt;/td&gt;
+        &lt;/tr&gt;
         {% endfor %}
-    </tbody>
-</table>
+    &lt;/tbody&gt;
+&lt;/table&gt;
                 </div>
             </div>
             
@@ -960,12 +977,12 @@
                 <div class="example-card">
                     <h3>🏆 2. Top N avec compteur</h3>
                     <div class="code-block">
-<h2>Top 3 des meilleures banques</h2>
+&lt;h2&gt;Top 3 des meilleures banques&lt;/h2&gt;
 {% for bank in best_banks|slice(0,3) %}
-    <h3>{{ loop.index }}. {{ bank.name }}</h3>
-    <p>{{ bank.description }}</p>
+    &lt;h3&gt;{{ loop.index }}. {{ bank.name }}&lt;/h3&gt;
+    &lt;p&gt;{{ bank.description }}&lt;/p&gt;
     {% if loop.index == 1 %}
-        <span class="badge-gold">Meilleur choix</span>
+        &lt;span class="badge-gold"&gt;Meilleur choix&lt;/span&gt;
     {% endif %}
 {% endfor %}
                     </div>
@@ -975,17 +992,17 @@
                     <h3>🎨 3. Badges dynamiques</h3>
                     <div class="code-block">
 {% for offre in offres %}
-    <div class="offer-card">
-        <h3>{{ offre.name }}</h3>
+    &lt;div class="offer-card"&gt;
+        &lt;h3&gt;{{ offre.name }}&lt;/h3&gt;
         
         {% if offre.selectra_score == "A" %}
-            <span class="badge-success">Recommandé</span>
+            &lt;span class="badge-success"&gt;Recommandé&lt;/span&gt;
         {% endif %}
         
         {% if offre.price == 0 %}
-            <span class="badge-free">Gratuit</span>
+            &lt;span class="badge-free"&gt;Gratuit&lt;/span&gt;
         {% endif %}
-    </div>
+    &lt;/div&gt;
 {% endfor %}
                     </div>
                 </div>
@@ -1096,27 +1113,27 @@
             <div class="syntax-card">
                 <h3>📋 Template SEO-friendly type</h3>
                 <div class="code-block">
-                    {# Récupération des données #}
-                    {% set offres = api_data.banks|slice(0, 5) %}
+{# Récupération des données #}
+{% set offres = api_data.banks|slice(0, 5) %}
 
-                    <h1>{{ page.title|default('Comparatif Banques') }}</h1>
+&lt;h1&gt;{{ page.title|default('Comparatif Banques') }}&lt;/h1&gt;
 
-                    {# Vérification que nous avons des données #}
-                    {% if offres|length > 0 %}
-                        <ul>
-                        {% for offre in offres %}
-                            <li>
-                                <h2>{{ offre.name }}</h2>
-                                <p>Prix : {% if offre.price == 0 %}Gratuit{% else %}{{ offre.price }}€{% endif %}</p>
-                                {% if offre.selectra_score is not empty %}
-                                    <p>Score Selectra : {{ offre.selectra_score }}</p>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>Aucune offre disponible pour le moment.</p>
-                    {% endif %}
+{# Vérification que nous avons des données #}
+{% if offres|length > 0 %}
+    &lt;ul&gt;
+    {% for offre in offres %}
+        &lt;li&gt;
+            &lt;h2&gt;{{ offre.name }}&lt;/h2&gt;
+            &lt;p&gt;Prix : {% if offre.price == 0 %}Gratuit{% else %}{{ offre.price }}€{% endif %}&lt;/p&gt;
+            {% if offre.selectra_score is not empty %}
+                &lt;p&gt;Score Selectra : {{ offre.selectra_score }}&lt;/p&gt;
+            {% endif %}
+        &lt;/li&gt;
+    {% endfor %}
+    &lt;/ul&gt;
+{% else %}
+    &lt;p&gt;Aucune offre disponible pour le moment.&lt;/p&gt;
+{% endif %}
                 </div>
             </div>
         </div>
@@ -1199,15 +1216,17 @@
         document.getElementById('total-slides').textContent = totalSlides;
         
         function showSlide(n) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (n + totalSlides) % totalSlides;
-            slides[currentSlide].classList.add('active');
-            
-            document.getElementById('current-slide').textContent = currentSlide + 1;
-            
-            // Update navigation buttons
-            document.getElementById('prevBtn').disabled = currentSlide === 0;
-            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            if (n >= 0 && n < totalSlides) {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = n;
+                slides[currentSlide].classList.add('active');
+                
+                document.getElementById('current-slide').textContent = currentSlide + 1;
+                
+                // Update navigation buttons
+                document.getElementById('prevBtn').disabled = currentSlide === 0;
+                document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            }
         }
         
         function changeSlide(direction) {
