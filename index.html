@@ -97,6 +97,7 @@
             border: 2px solid #4a5568;
             font-size: 14px;
             line-height: 1.4;
+            white-space: pre-wrap;
         }
         
         .code-inline {
@@ -447,12 +448,12 @@
             <div class="important-note">
                 <h3>✅ Solution Twig (automatisée)</h3>
                 <div class="code-block">
-{% set offres = api_data.banks %}
-{% for offre in offres|slice(0, 3) %}
-    &lt;h3&gt;{{ loop.index }}. {{ offre.name }}&lt;/h3&gt;
-    &lt;p&gt;Note : {{ offre.selectra_score }}&lt;/p&gt;
-    &lt;p&gt;Prix : {{ offre.price }}€&lt;/p&gt;
-{% endfor %}
+                    {% set offres = api_data.banks %}
+                    {% for offre in offres|slice(0, 3) %}
+                        &lt;h3&gt;{{ loop.index }}. {{ offre.name }}&lt;/h3&gt;
+                        &lt;p&gt;Note : {{ offre.selectra_score }}&lt;/p&gt;
+                        &lt;p&gt;Prix : {{ offre.price }}€&lt;/p&gt;
+                    {% endfor %}
                 </div>
                 <p><strong>Résultat :</strong> Top 3 automatique, toujours à jour, avec structure HTML optimisée !</p>
             </div>
